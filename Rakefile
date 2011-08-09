@@ -1,7 +1,6 @@
 $:.push(File.join(File.dirname(__FILE__), 'lib'))
 require 'bundler'
 Bundler::GemHelper.install_tasks
-require 'bundler/gem_tasks'
 require 'feta/version'
 require 'rake/testtask'
 
