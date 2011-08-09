@@ -52,6 +52,16 @@ module Feta
       "#{@client.url}/#{id}"
     end
 
+    # @param product [String] Product name
+    # @return [Symbol] status for +product+ or nil
+    #   if the product is not in the feature
+    def status_for_product(product)
+      product_contexts.each do |ctx|
+        return ctx.status if ctx.product == product
+      end
+      nil
+    end
+
     def product
       return ""
     end
