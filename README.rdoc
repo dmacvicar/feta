@@ -1,0 +1,26 @@
+
+= Feta
+
+* http://github.com/dmacvicar/feta
+
+== Introduction
+
+Library to access FATE and command line tool.
+
+== Features
+
+== Example (API)
+
+=== Client API
+
+=== ActiveRecord-like API
+
+== Authors
+
+* Duncan Mac-Vicar P. <dmacvicar@suse.de>
+
+== License
+
+Copyright (c) 2011 SUSE LINUX Products GmbH.
+
+Bicho is licensed under the MIT license. See MIT-LICENSE for details.
