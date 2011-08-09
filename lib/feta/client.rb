@@ -92,7 +92,7 @@ module Feta
         feat_element.xpath('./productcontext', 'k' => KEEPER_XML_NS).each do |ctx_element|
           ctx = Feature::ProductContext.new
           ctx.product = ctx_element.xpath('./product/name').first.content
-          ctx.status = ctx_element.xpath('./status').children.select {|x| x.element?}.first.name.to_s
+          ctx.status = ctx_element.xpath('./status').children.select {|x| x.element?}.first.name.to_sym
           feature.product_contexts << ctx
         end
         yield feature if block_given?
