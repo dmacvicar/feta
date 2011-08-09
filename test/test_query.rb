@@ -2,10 +2,9 @@ require File.join(File.dirname(__FILE__), 'helper')
 
 class Query_test < Test::Unit::TestCase
 
-  def test_active_record_style
+  include ::Feta::Logging
 
-    Feta::Logging.logger = Logger.new(STDERR)
-    Feta::Logging.logger.level = Logger::DEBUG
+  def test_active_record_style
 
     # No client set yet
     assert_raise RuntimeError do
@@ -15,15 +14,16 @@ class Query_test < Test::Unit::TestCase
     end
 
     Feta.client = Feta::Client.new("https://fate.novell.com")
-    ret  = Feta::Feature.query.only_actor("dmacvicar@novell.com").to_a
-    #assert ret.collect(&:id).include?(645150)
+    query  = Feta::Feature.query.only_actor("dmacvicar@novell.com").only_product("openSUSE-11.4")
 
-    STDERR.puts ret.collect(&:id)
+    ret = query.each.to_a
+
+    assert ret.collect(&:id).include?("303793")
 
     ret.each do |feature|
-      STDERR.puts feature.title
+      logger.debug feature.title
       feature.product_contexts.each do |ctx|
-        STDERR.puts "  #{ctx.product} #{ctx.status}"
+        logger.debug "  #{ctx.product} #{ctx.status}"
       end
     end
 

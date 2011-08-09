@@ -37,13 +37,31 @@ module Feta
       @feature_id = nil
     end
 
+    # Queries only features where this actor is present
+    # @param actor [String] Actor email
     def only_actor(actor)
       @actor = actor
       self
     end
 
+    # Restrict the actor's role to +role+
+    # @param role [String] Actor's role
     def with_role(role)
       @role = role
+      self
+    end
+
+    # Queries only features for these product
+    # @param product [String] Product name
+    def only_product(product)
+      only_products([product])
+    end
+
+    # Queries only features for these products
+    # @param products [Array<String>] Product name list
+    def only_products(products)
+      @products = []
+      @products = products.flatten
       self
     end
 
@@ -59,7 +77,9 @@ module Feta
       id_query = @feature_id ? "@k:id=#{@feature_id}" : ""
       role_query = @role ? " and role='#{@role}'" : ""
       actor_query = @actor ? "actor[person/email='#{@actor}'#{role_query}]" : ""
-      conditions = [id_query, actor_query].reject{ |x| x.empty? }.join(' and ')
+      prods = @products.collect {|p| "product/name='#{p}'"}.join(" or ")
+      product_query = (!@products.empty?) ? "productcontext[#{prods}]" : ""
+      conditions = [id_query, actor_query, product_query].reject{ |x| x.empty? }.join(' and ')
       query = "/feature[#{conditions}]"
     end
 
