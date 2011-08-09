@@ -20,6 +20,13 @@ class Query_test < Test::Unit::TestCase
 
     STDERR.puts ret.collect(&:id)
 
+    ret.each do |feature|
+      STDERR.puts feature.title
+      feature.product_contexts.each do |ctx|
+        STDERR.puts "  #{ctx.product} #{ctx.status}"
+      end
+    end
+
   end
 
 end

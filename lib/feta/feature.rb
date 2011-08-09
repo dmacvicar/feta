@@ -24,12 +24,19 @@ module Feta
 
     attr_accessor :feature_id, :title, :products, :developers, :infoprovider
 
+    attr_accessor :product_contexts
+
+    class ProductContext
+      attr_accessor :product, :status
+    end
+
     def id
       feature_id
     end
 
     def initialize(client)
       @client = client
+      @product_contexts = []
     end
 
     def self.find(what=nil)
