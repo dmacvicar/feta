@@ -75,7 +75,7 @@ module Feta
     # @return [Symbol] status for +product+ or nil
     #   if the product is not in the feature
     def status_for_product(product)
-      ctx{product.to_s}.status
+      product_contexts{product.to_s}.status
     end
 
     # @return [Symbol] the priority of this feature
