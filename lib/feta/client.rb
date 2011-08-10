@@ -121,6 +121,13 @@ module Feta
       search_by_xquery(query.to_xquery)
     end
 
+    # Search for features using a plain XQuery
+    #
+    # @param xquery [String] XQuery specifying the search criteria
+    # @return [Array<Feature>] List of features
+    #
+    # @example Example XQuery:
+    #
     def search_by_xquery(xquery)
       logger.debug "XQuery: #{xquery}"
       url = URI.parse("#{@keeper_url}/feature?query=#{CGI.escape(xquery)}").to_s
