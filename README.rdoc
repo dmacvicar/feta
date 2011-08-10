@@ -5,15 +5,69 @@
 
 == Introduction
 
-Library to access FATE and command line tool.
+Library to access FATE
+
+Note: The API is still a draft. Be careful.
 
 == Features
+
+* Simple queries by actor, roles.
+* For SUSE's FATE server, you can use the web url and it will use the
+  right keeper server and take your .oscrc credentials.
+
+More will be coming, the focus is on providing an easy API. You can always
+get anything else by just doing xpath queries.
 
 == Example (API)
 
 === Client API
 
+    client = Feta::Client.new("https://user:password@keeper.host.com")
+    query = Feta::Query.new.only_actor("me@mail.com").only_product("openSUSE-11.4")
+    features = client.search(query)
+
 === ActiveRecord-like API
+
+    Feta.client = Feta::Client.new("https://user:password@keeper.host.com")
+    Feta::Feature.query.only_actor("me@mail.com").only_product("openSUSE-11.4").each do |feature|
+       # .. do something with feature
+    end
+
+== Extending Feta
+
+Feta will look in the following places for plugins:
+
+* lib/feta/plugins in the gem path
+* $HOME/.local/share/feta/plugins
+
+A plugin is a class under Feta::Plugins, only one hook is available for now:
+
+    class Feta::Plugins::MyPlugin
+
+      def to_s
+        self.class.to_s
+      end
+
+      def order
+        # load always last
+        (1.0/0)
+      end
+
+      def initialize_hook(url, logger, headers)
+        # modify the url, add headers or configure the logger
+      end
+    end
+
+== SUSE plugin
+
+One plugin is included which takes the credentials from .oscrc if using the
+SUSE internal keeper server.
+
+=== Roadmap
+
+* Change query methods to make them more similar to the Bicho library
+* Add more data to the Feature class
+* Allow to search by an arbitrary xpath expression
 
 == Authors
 

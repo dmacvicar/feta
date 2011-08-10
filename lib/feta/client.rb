@@ -52,16 +52,22 @@ module Feta
       @headers = Hash.new
 
       # Scan plugins
-      plugin_glob = File.join(File.dirname(__FILE__), 'plugins', '*.rb')
-      Dir.glob(plugin_glob).each do |plugin|
-        logger.debug("Loading file: #{plugin}")
-        load plugin
+      [ File.join(ENV['HOME'], '.local/share/feta/plugins/*.rb'),
+        File.join(File.dirname(__FILE__), 'plugins', '*.rb') ].each do |plugin_glob|
+        Dir.glob(plugin_glob).each do |plugin|
+          logger.debug("Loading file: #{plugin}")
+          load plugin
+        end
       end
 
       #instantiate plugins
+      pl_instances = []
       ::Feta::Plugins.constants.each do |cnt|
         pl_class = ::Feta::Plugins.const_get(cnt)
-        pl_instance = pl_class.new
+        pl_instances << pl_class.new
+      end
+
+      pl_instances.sort{|x,y| x.order <=> y.order}.each do |pl_instance|
         logger.debug("Loaded: #{pl_instance}")
         pl_instance.initialize_hook(url, logger, @headers)
       end

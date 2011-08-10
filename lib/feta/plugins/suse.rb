@@ -28,18 +28,13 @@ require 'uri'
 module Feta
   module Plugins
 
-    # openSUSE / Novell keeper is behind ichain
-    #
-    # Plugin that rewrites the Keeper API url
-    # to the internal endpoint without
-    # ichain.
-    #
-    # Also, it takes your credentials from
-    # your oscrc.
+    # Rewrites the fate.novell.com url to the
+    # right keeper server and inserts
+    # the osc credentials from .oscrc
     #
     class SUSE
 
-      OSCRC_CREDENTIALS = "https://api.suse.de"
+      OSCRC_CREDENTIALS = "https://api.opensuse.org"
 
       def to_s
         self.class.to_s
@@ -58,19 +53,16 @@ module Feta
         end
       end
 
+      def order
+        1
+      end
+
       def initialize_hook(url, logger, headers)
         return if not url.host.include?('fate.novell.com')
         auth = SUSE.oscrc_credentials
-        if File.exist?(File.join(ENV['HOME'], '.keeperdmz'))
-          url.host = url.host.gsub(/fate\.novell.com/, 'keeperdmz.suse.de')
-          headers['x-username'] = auth[:user]
-          url.scheme = 'http'
-          # internal keeper does not support https
-        else
-          url.host = url.host.gsub(/fate\.novell.com/, 'keeper.novell.com')
-          url.user = auth[:user]
-          url.password = auth[:password]
-        end
+        url.host = url.host.gsub(/fate\.novell.com/, 'keeper.novell.com')
+        url.user = auth[:user]
+        url.password = auth[:password]
         url.path = '/sxkeeper' if url.path.empty?
         logger.debug("#{self} : Rewrote url to '#{url.to_s.gsub(/#{url.user}:#{url.password}/, "USER:PASS")}'")
       end

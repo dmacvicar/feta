@@ -26,6 +26,7 @@ require 'feta/common_client'
 
 module Feta
 
+  # A query to the keeper server
   class Query
 
     include Enumerable
