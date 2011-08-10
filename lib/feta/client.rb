@@ -75,15 +75,57 @@ module Feta
       @keeper_url = url
     end
 
+    # helper method to sort relation tree elements with subelements
+    # @param element [Nokogiri::Element] Element to calculate its sorting order
+    # @private
+    def self.sorting_order(element)
+      if element.parent.element? && element.parent.name == "relation"
+          return (element.attributes['sortPosition'].to_s.to_f / 10) + sorting_order(element.parent)
+      end
+      return element.attributes['sortPosition'].to_s.to_f
+    end
+
+    def get_relation_tree(tree_name)
+      url_query = CGI.escape("/relationtree[contains(title,'#{tree_name}')]")
+      url = URI.parse("#{@keeper_url}/relationtree?query=#{url_query}").to_s
+      xml = RestClient.get(url, @headers).body
+      doc = Nokogiri::XML(xml)
+      elements = []
+      elements = doc.xpath('//relation', 'k' => KEEPER_XML_NS)
+
+      # Make a flat list leaving only the more granular features
+      # (not master features)
+      ids = elements.collect { |x| x.ancestors.select {|x| x.element? && x.name == "relation" } }.flatten.uniq.collect { |x| x.attributes['target']}
+      elements = elements.reject {|x| ids.include?(x.attributes['target'])}
+
+      # Create a map with the sorting order by id
+      order_map = Hash.new
+      elements.each do |element|
+        order_map[element.attributes['target'].to_s] = self.class.sorting_order(element)
+      end
+
+      # build the predicate querying all the features in the
+      # relation tree
+      predicate = order_map.keys.collect {|x| "@k:id=#{x}"}.join(" or ")
+      xquery = "/feature[#{predicate}]"
+
+      # do query and sort by relation tree
+      search_by_xquery(xquery).sort {|x,y| order_map[x.id] <=> order_map[y.id]}
+    end
+
     # Search for features
     #
     # @param query [Query] Query specifying the search criteria
     # @return [Array<Feature>] List of features
     def search(query)
-      url_query = "?query=#{CGI.escape(query.to_xquery)}"
-      url = URI.parse("#{@keeper_url}/feature#{url_query}").to_s
+      search_by_xquery(query.to_xquery)
+    end
 
+    def search_by_xquery(xquery)
+      logger.debug "XQuery: #{xquery}"
+      url = URI.parse("#{@keeper_url}/feature?query=#{CGI.escape(xquery)}").to_s
       xml = RestClient.get(url, @headers).body
+
       features = []
       doc = Nokogiri::XML(xml)
       doc.xpath('//feature', 'k' => KEEPER_XML_NS).each do |feat_element|
