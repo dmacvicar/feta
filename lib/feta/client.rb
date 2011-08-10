@@ -98,7 +98,7 @@ module Feta
           # Priorities
           ctx_element.xpath('./priority').each do |prio_element|
             prio = prio_element.children.select(&:element?).first.name.to_sym
-            owner = prio_element.xpath('./owner/role').content.to_sym
+            owner = prio_element.xpath('./owner/role').first.content.to_sym
             ctx.priorities[owner] = prio
           end
         end
