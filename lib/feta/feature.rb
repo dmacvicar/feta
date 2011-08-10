@@ -75,13 +75,25 @@ module Feta
     # @return [Symbol] status for +product+ or nil
     #   if the product is not in the feature
     def status_for_product(product)
-      product_contexts{product.to_s}.status
+      product_contexts[product.to_s].status
     end
 
     # @return [Symbol] the priority of this feature
     #   given by +role+ for +product+
     def priority_for_product_and_role(product, role)
-      product_contexts{product.to_s}.priorities[role.to_sym]
+      product_contexts[product.to_s].priorities[role.to_sym]
+    end
+
+    # @return [Fixnum] numeric priority for this feature
+    #   use it for sorting
+    def numeric_priority_for_product_and_role(product, role)
+      case priority_for_product_and_role(product, role)
+        when :neutral then 0
+        when :desirable then 1
+        when :important then 2
+        when :mandatory then 3
+        else -1
+      end
     end
 
   end

@@ -20,13 +20,13 @@ class Query_test < Test::Unit::TestCase
 
     assert ret.collect(&:id).include?("303793")
 
-    ret.each do |feature|
-      logger.debug feature.title
-      feature.product_contexts.each do |ctx|
-        logger.debug "  #{ctx.product} #{ctx.status}"
-      end
-    end
+    feature = ret.collect.select {|x| x.id == "303793"}.first
 
+    assert_equal :rejected, feature.status_for_product("openSUSE-11.2")
+    assert_equal :important, feature.priority_for_product_and_role("openSUSE-11.2", :productmanager)
+    assert_nil feature.priority_for_product_and_role("openSUSE-11.2", :nobody)
+
+    assert_equal :done, feature.status_for_product("openSUSE-11.4")
   end
 
 end
