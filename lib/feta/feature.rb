@@ -72,17 +72,17 @@ module Feta
     end
 
     # @param product [String] Product name
-    # @return [Symbol] status for +product+ or +:none+
+    # @return [Symbol] status for +product+ or +nil+
     #   if the product is not in the feature
     def status_for_product(product)
-      product_contexts[product.to_s].status rescue :none
+      product_contexts[product.to_s].status rescue :nil
     end
 
     # @return [Symbol] the priority of this feature
-    #   given by +role+ for +product+ or +:none+ if the product
+    #   given by +role+ for +product+ or +nil+ if the product
     #   is not in the feature
     def priority_for_product_and_role(product, role)
-      product_contexts[product.to_s].priorities[role.to_sym] rescue :none
+      product_contexts[product.to_s].priorities[role.to_sym] rescue :nil
     end
 
     # @return [Fixnum] numeric priority for this feature
