@@ -81,7 +81,7 @@ module Feta
     # @return [Symbol] the priority of this feature
     #   given by +role+ for +product+
     def priority_for_product_and_role(product, role)
-      ctx{product.to_s}.priorities[role.to_sym]
+      product_contexts{product.to_s}.priorities[role.to_sym]
     end
 
   end
