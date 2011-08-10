@@ -91,9 +91,16 @@ module Feta
         end
         feat_element.xpath('./productcontext', 'k' => KEEPER_XML_NS).each do |ctx_element|
           ctx = Feature::ProductContext.new
-          ctx.product = ctx_element.xpath('./product/name').first.content
+          product = ctx_element.xpath('./product/name').first.content
           ctx.status = ctx_element.xpath('./status').children.select {|x| x.element?}.first.name.to_sym
-          feature.product_contexts << ctx
+          feature.product_contexts[product] = ctx
+
+          # Priorities
+          ctx_element.xpath('./priority').each do |prio_element|
+            prio = prio_element.children.select(&:element?).first.name.to_sym
+            owner = prio_element.xpath('./owner/role').content.to_sym
+            ctx.priorities[owner] = prio
+          end
         end
         yield feature if block_given?
         features << feature

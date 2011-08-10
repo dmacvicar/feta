@@ -24,10 +24,29 @@ module Feta
 
     attr_accessor :feature_id, :title, :products, :developers, :infoprovider
 
+    # A feature different statuses and other properties with regard
+    # to different products
+    #
+    # @return [Hash] key is the product, value is a {ProductContext}
     attr_accessor :product_contexts
 
     class ProductContext
-      attr_accessor :product, :status
+
+      def initialize
+        @priorities = Hash.new
+      end
+
+      # Status of the feature for a specific product
+      # (+:evaluation+, +:implementation+, etc)
+      attr_accessor :status
+
+      # If status is +:evaluation+ then the status has a owner
+      # (+:teamleader+, +:projectmanager+, etc)
+      attr_accessor :status_owner
+
+      # For an specific product, a feature has
+      # @return [Hash] key is the owner, value is the priority
+      attr_accessor :priorities
     end
 
     def id
@@ -36,7 +55,7 @@ module Feta
 
     def initialize(client)
       @client = client
-      @product_contexts = []
+      @product_contexts = Hash.new
     end
 
     def self.find(what=nil)
@@ -56,14 +75,13 @@ module Feta
     # @return [Symbol] status for +product+ or nil
     #   if the product is not in the feature
     def status_for_product(product)
-      product_contexts.each do |ctx|
-        return ctx.status if ctx.product == product
-      end
-      nil
+      ctx{product.to_s}.status
     end
 
-    def product
-      return ""
+    # @return [Symbol] the priority of this feature
+    #   given by +role+ for +product+
+    def priority_for_product_and_role(product, role)
+      ctx{product.to_s}.priorities[role.to_sym]
     end
 
   end
