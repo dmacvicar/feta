@@ -77,4 +77,4 @@ SUSE internal keeper server.
 
 Copyright (c) 2011 SUSE LINUX Products GmbH.
 
-Bicho is licensed under the MIT license. See MIT-LICENSE for details.
+Feta is licensed under the MIT license. See MIT-LICENSE for details.
