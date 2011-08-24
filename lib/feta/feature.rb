@@ -49,6 +49,12 @@ module Feta
       attr_accessor :priorities
     end
 
+    # Defines the equality of two features (same id)
+    # @param [Feature] other_feature Feature to compare with
+    def ==(other_feature)
+      self.id == other_feature.id
+    end
+
     def id
       feature_id
     end
