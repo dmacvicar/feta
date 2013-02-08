@@ -26,6 +26,9 @@ get anything else by just doing xpath queries.
     query = Feta::Query.new.only_actor("me@mail.com").only_product("openSUSE-11.4")
     features = client.search(query)
 
+    query = Feta::Query.new.with_id("1234")
+    features = client.search(query)
+
 === ActiveRecord-like API
 
     Feta.client = Feta::Client.new("https://user:password@keeper.host.com")
